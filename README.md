@@ -153,20 +153,14 @@ curl -X POST http://localhost:7860/step \
   }'
 ```
 
-### `GET /state`
-
-Get current episode state.
-
-```bash
-curl http://localhost:7860/state
-```
+### Quick Test
 
 ### `GET /health`
 
 Health check — returns 200 if the server is running.
 
 ```bash
-curl http://localhost:7860/health
+curl https://harshitt14-code-review-env.hf.space/health
 ```
 
 ### `GET /tasks`
@@ -174,7 +168,7 @@ curl http://localhost:7860/health
 List all available tasks.
 
 ```bash
-curl http://localhost:7860/tasks
+curl https://harshitt14-code-review-env.hf.space/tasks
 ```
 
 ---
@@ -184,7 +178,7 @@ curl http://localhost:7860/tasks
 ### Local (Python)
 
 ```bash
-git clone https://huggingface.co/spaces/<your-username>/code-review-env
+git clone https://huggingface.co/spaces/harshitt14/code-review-env
 cd code-review-env
 
 pip install -r requirements.txt
