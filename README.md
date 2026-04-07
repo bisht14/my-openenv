@@ -1,17 +1,3 @@
----
-title: Code Review OpenEnv
-emoji: 🔍
-colorFrom: blue
-colorTo: green
-sdk: docker
-pinned: false
-tags:
-  - openenv
-  - code-review
-  - reinforcement-learning
-  - agent-environment
----
-
 # Code Review OpenEnv 🔍
 
 A real-world [OpenEnv](https://huggingface.co/openenv) environment where AI agents practice **software code review** — one of the most common and high-value tasks in professional software engineering.
