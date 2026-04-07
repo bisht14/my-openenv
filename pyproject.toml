@@ -9,7 +9,8 @@ dependencies = [
     "uvicorn",
     "pydantic",
     "openenv>=0.2.0",
-    "requests"
+    "requests",
+    "openai"
 ]
 
 [project.scripts]
