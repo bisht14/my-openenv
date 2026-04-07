@@ -1,0 +1,123 @@
+name: code-review-env
+version: "1.0.0"
+description: >
+  A real-world OpenEnv environment where AI agents practice software code review.
+  The agent reads code snippets, identifies bugs/security vulnerabilities/style issues,
+  assigns severity levels, and explains fixes — skills directly applicable to developer
+  tooling, CI pipelines, and automated code quality systems.
+
+author: harshitt14
+tags:
+  - openenv
+  - code-review
+  - security
+  - software-engineering
+  - real-world
+
+# ── Action space ──────────────────────────────────────────────────────────────
+action_space:
+  type: structured
+  fields:
+    issues_found:
+      type: list[string]
+      description: List of issues identified in the code snippet
+    severity_tags:
+      type: list[string]
+      enum: [low, medium, high, critical]
+      description: Severity label for each identified issue (parallel to issues_found)
+    explanation:
+      type: string
+      description: Overall explanation, root-cause analysis, and suggested fixes
+    line_numbers:
+      type: list[int]
+      required: false
+      description: Optional line numbers corresponding to each issue
+
+# ── Observation space ─────────────────────────────────────────────────────────
+observation_space:
+  type: structured
+  fields:
+    code_snippet:
+      type: string
+      description: The code the agent must review
+    language:
+      type: string
+      description: Programming language of the snippet
+    task_description:
+      type: string
+      description: Human-readable instructions for the agent
+    step_number:
+      type: int
+    last_feedback:
+      type: string
+      description: Grader feedback from the previous step
+    cumulative_score:
+      type: float
+      range: [0.0, 1.0]
+    hints:
+      type: list[string]
+      description: Optional hints (available on medium/hard tasks)
+
+# ── Tasks ─────────────────────────────────────────────────────────────────────
+tasks:
+  - id: spot-the-bug
+    difficulty: easy
+    language: Python
+    max_steps: 4
+    description: >
+      Find exactly one bug in a short Python function.
+      The snippet has an off-by-one error causing an IndexError.
+    reward_range: [0.0, 1.0]
+    success_threshold: 0.7
+
+  - id: security-audit
+    difficulty: medium
+    language: Python
+    max_steps: 6
+    description: >
+      Identify three security vulnerabilities: SQL injection,
+      hardcoded credentials, and plaintext password comparison.
+    reward_range: [0.0, 1.0]
+    success_threshold: 0.6
+
+  - id: full-review
+    difficulty: hard
+    language: Python
+    max_steps: 8
+    description: >
+      Conduct a thorough code review of a multi-function script.
+      Find six issues spanning security (eval/arbitrary execution, insecure default),
+      resource management (file handle leak), performance (unbounded reads),
+      robustness (missing error handling), and style (PEP 8 imports).
+    reward_range: [0.0, 1.0]
+    success_threshold: 0.5
+
+# ── Reward function ───────────────────────────────────────────────────────────
+reward_function:
+  type: weighted_sum
+  components:
+    - name: issue_detection
+      weight: 0.60
+      description: Fraction of ground-truth issues whose keywords appear in the agent response
+    - name: severity_accuracy
+      weight: 0.20
+      description: Correctness of per-issue severity labels; partial credit for adjacent levels
+    - name: explanation_depth
+      weight: 0.20
+      description: Heuristic quality of explanation (length, fix suggestions, line references)
+
+# ── Runtime ───────────────────────────────────────────────────────────────────
+runtime:
+  framework: fastapi
+  port: 7860
+  endpoints:
+    reset: POST /reset
+    step:  POST /step
+    state: GET  /state
+    close: POST /close
+    health: GET /health
+
+docker:
+  base_image: python:3.11-slim
+  build_cmd: docker build -t code-review-env .
+  run_cmd:   docker run -p 7860:7860 code-review-env
