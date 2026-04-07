@@ -9,6 +9,7 @@ dependencies = [
     "uvicorn",
     "pydantic",
     "openenv>=0.2.0"
+    "requests"
 ]
 
 [project.scripts]
