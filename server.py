@@ -43,7 +43,7 @@ app.add_middleware(
 _env: Optional[CodeReviewEnv] = None
 
 
-# ── Request / Response schemas ────────────────────────────────────────────────
+# ── Request / Response schemas
 
 class ResetRequest(BaseModel):
     task_name: str = "spot-the-bug"
@@ -56,7 +56,7 @@ class StepRequest(BaseModel):
     line_numbers: Optional[List[int]] = None
 
 
-# ── Endpoints ─────────────────────────────────────────────────────────────────
+# ── Endpoints
 
 @app.get("/health")
 async def health() -> Dict[str, str]:
@@ -80,15 +80,23 @@ async def list_tasks() -> Dict[str, Any]:
 
 
 @app.post("/reset")
-async def reset(req: ResetRequest) -> Dict[str, Any]:
+async def reset(req: Optional[ResetRequest] = None) -> Dict[str, Any]:
     global _env
-    if req.task_name not in ALL_TASKS:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unknown task '{req.task_name}'. Valid: {list(ALL_TASKS.keys())}",
-        )
-    _env = await CodeReviewEnv.create(task_name=req.task_name)
+
+    # default task
+    task_name = "spot-the-bug"
+
+    if req and req.task_name:
+        if req.task_name not in ALL_TASKS:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unknown task '{req.task_name}'. Valid: {list(ALL_TASKS.keys())}",
+            )
+        task_name = req.task_name
+
+    _env = await CodeReviewEnv.create(task_name=task_name)
     result = await _env.reset()
+
     return {
         "observation": result.observation.model_dump(),
         "done": result.done,
