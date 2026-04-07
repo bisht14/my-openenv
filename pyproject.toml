@@ -1,0 +1,22 @@
+[project]
+requires-python = ">=3.10"
+name = "code-review-env"
+version = "0.1.0"
+description = "OpenEnv Code Review Environment"
+authors = [{ name = "Harshit Singh Bisht" }]
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "openenv==0.1.13",
+    "requests",
+    "openai"
+]
+
+[project.scripts]
+server = "server.app:main"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
